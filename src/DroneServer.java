@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -5,6 +6,8 @@ import java.net.Socket;
 @SuppressWarnings("InfiniteLoopStatement")
 public class DroneServer {
     public static void main (String[] args) {
+
+        ServerManager a = new ServerManager();
 
         try{
             int serverPort = 8888;
