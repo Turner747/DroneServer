@@ -9,8 +9,8 @@ public class ServerManager extends JFrame implements ActionListener {
 
     private final String TITLE = "Drone Management Console";
 
-    private final int WIDTH = 1000;
-    private final int HEIGHT = 600;
+    private final int WIDTH = 1100;
+    private final int HEIGHT = 650;
     private final int X_POS = 100;
     private final int Y_POS = 100;
 
@@ -18,14 +18,16 @@ public class ServerManager extends JFrame implements ActionListener {
 
     private JPanel rightPanel = new JPanel();
     private JPanel leftPanel = new JPanel();
+    private JPanel topPanel = new JPanel();
     private JLabel controlLabel = new JLabel("Control:");
     private JPanel controlPanel = new JPanel();
 
-    private JLabel mapLabel = new JLabel("Map:");
+    private JLabel mapLabel = new JLabel("Map");
     private JPanel mapPanel = new JPanel();
 
-    private JLabel outputLabel = new JLabel("Output:");
+    private JLabel outputLabel = new JLabel("Output");
     private JTextArea outputTextArea = new JTextArea();
+
 
     public ServerManager(){
         this.setLayout(new FlowLayout());
@@ -33,18 +35,22 @@ public class ServerManager extends JFrame implements ActionListener {
 
         titleLabel.setFont(new Font("Ariel", Font.BOLD, 22));
         titleLabel.setSize(1000,20);
-        this.add(titleLabel);
+        topPanel.setPreferredSize(new Dimension(1000, 50));
+        topPanel.add(titleLabel);
+        this.add(topPanel);
 
         leftPanel.setPreferredSize(new Dimension(200, 600));
-
-        leftPanel.add(controlLabel);
-        controlPanel.setPreferredSize(new Dimension(200, 200));
+        controlPanel.setPreferredSize(new Dimension(200, 250));
         leftPanel.add(controlPanel);
         leftPanel.add(outputLabel);
-        outputTextArea.setPreferredSize(new Dimension(200, 200));
+        outputTextArea.setPreferredSize(new Dimension(200, 245));
         outputTextArea.setEditable(false);
         leftPanel.add(outputTextArea);
         this.add(leftPanel);
+
+        var spacer = new JPanel();
+        spacer.setPreferredSize(new Dimension(10,600));
+        this.add(spacer);
 
         rightPanel.setPreferredSize(new Dimension(800, 600));
         rightPanel.add(mapLabel);
