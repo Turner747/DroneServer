@@ -1,3 +1,7 @@
+import Models.Drone;
+import Models.ServerResponse;
+import ServerManager.ServerManager;
+
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -7,10 +11,13 @@ import java.net.Socket;
 public class DroneConnection extends Thread {
     ObjectInputStream in;
     ObjectOutputStream out;
-    Socket clientSocket;
+    private Socket clientSocket;
 
-    public DroneConnection (Socket aClientSocket) {
+    ServerManager appWindow;
 
+    public DroneConnection (Socket aClientSocket, ServerManager window) {
+
+        this.appWindow = window;
         try {
             clientSocket = aClientSocket;
             in = new ObjectInputStream( clientSocket.getInputStream());
@@ -25,7 +32,7 @@ public class DroneConnection extends Thread {
 
         try {
 
-            DroneState drone = (DroneState) in.readObject();
+            Drone drone = (Drone) in.readObject();
 
             // do stuff todo: process drone state
 
