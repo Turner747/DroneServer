@@ -35,8 +35,6 @@ public class ServerManager extends JFrame implements ActionListener {
     private JLabel outputLabel = new JLabel("Output");
     private JTextArea outputTextArea = new JTextArea();
 
-    private ArrayList<Drone> drones;
-    private ArrayList<Fire> fires;
 
     public ServerManager(){
         this.setLayout(new FlowLayout());
@@ -82,9 +80,6 @@ public class ServerManager extends JFrame implements ActionListener {
         this.setBounds(X_POS, Y_POS, WIDTH, HEIGHT);
         this.setVisible(true);
         this.setResizable(false);
-
-        drones = new ArrayList<>();
-        fires = new ArrayList<>();
     }
 
     @Override
@@ -110,26 +105,10 @@ public class ServerManager extends JFrame implements ActionListener {
             throw new IllegalArgumentException("Fire position is out of bounds of the map. " +
                     "Fire position: (" + fire.getXCoordinate() + ", " + fire.getYCoordinate() + "). Map size: (" + MAP_WIDTH + ", " + MAP_HEIGHT + ").");
 
-        Fire newFire = null;
-        for (Fire f : fires) {
-            if(f.getId() == fire.getId()) {
-                f.setXCoordinate(fire.getXCoordinate());
-                f.setYCoordinate(fire.getYCoordinate());
-                f.setSeverity(fire.getSeverity());
-                newFire = f;
+        this.removeFireMarker(fire.getId());
+        mapPanel.add(new FireMarker(fire));
 
-                mapPanel.remove(f.getId() - 1);
-
-                return;
-            }
-        }
-
-        if(newFire == null){
-            fires.add(fire);
-            newFire = fire;
-        }
-
-        mapPanel.add(new FireMarker(newFire));
+        mapPanel.repaint();
     }
 
     public void removeDroneMarker(int id){
@@ -144,35 +123,28 @@ public class ServerManager extends JFrame implements ActionListener {
                 }
             }
         }
-;
+
         mapPanel.repaint();
-
-        for (Drone d : drones) {
-            if (d.getId() == id){
-                drones.remove(d);
-                break;
-            }
-        }
     }
 
-    public void writeOutput(String output) {
-        outputTextArea.append(output + "\n");
-    }
+    public void removeFireMarker(int id){
 
-    private void moveDroneMarker(Drone drone){
         var comps = mapPanel.getComponents();
 
         for(Component c : comps){
-            if(c instanceof DroneMarker){
-                if(((DroneMarker) c).getId() == drone.getId()){
-                    c.setBounds(drone.getXCoordinate(),drone.getYCoordinate(),DroneMarker.WIDTH,DroneMarker.HEIGHT);
+            if(c instanceof FireMarker){
+                if(((FireMarker) c).getId() == id){
+                    mapPanel.remove(c);
                     break;
                 }
             }
         }
 
-        //mapPanel.revalidate();
         mapPanel.repaint();
+    }
+
+    public void writeOutput(String output) {
+        outputTextArea.append(output + "\n");
     }
 
 

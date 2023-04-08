@@ -12,10 +12,13 @@ public class FireMarker extends JPanel{
     private final int HEIGHT = 30;
     private int severity;
 
+    private int id;
+
     public FireMarker(Fire fire){
         this.x = fire.getXCoordinate();
         this.y = fire.getYCoordinate();
         this.severity = fire.getSeverity();
+        this.id = fire.getId();
 
         this.setBounds(x, y, WIDTH, HEIGHT);
         this.setBackground(Color.red);
@@ -23,5 +26,9 @@ public class FireMarker extends JPanel{
         this.add(new JLabel("Models.Fire"));
         this.add(new JLabel("Severity: " + this.severity));
 
+    }
+
+    public int getId() {
+        return id;
     }
 }
