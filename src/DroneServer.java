@@ -13,18 +13,28 @@ public class DroneServer {
         ServerManager app = new ServerManager();
 
         Drone drone1 = new Drone(1, "Drone 1", 100, 100, null);
-        app.addDroneMarker(drone1);
+        app.addUpdateDroneMarker(drone1);
         Drone drone2 = new Drone(2, "Drone 2", 200, 200, null);
-        app.addDroneMarker(drone2);
+        app.addUpdateDroneMarker(drone2);
 
         try {
-            TimeUnit.SECONDS.sleep(5);
+            TimeUnit.SECONDS.sleep(1);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
 
         drone1.setXCoordinate(400);
-        app.addDroneMarker(drone1);
+        app.addUpdateDroneMarker(drone1);
+        app.writeOutput("Drone 1 has been moved");
+
+        try {
+            TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        app.removeDroneMarker(drone1.getId());
+        app.writeOutput("Drone 1 has been removed");
 
         try{
             int serverPort = 8888;
