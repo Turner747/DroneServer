@@ -1,6 +1,7 @@
 package Models;
 
 import java.io.Serializable;
+import java.util.Scanner;
 
 public class Drone implements Serializable {
     private int id;
@@ -80,5 +81,24 @@ public class Drone implements Serializable {
                 ", yCoordinate=" + yCoordinate +
                 ", fire=" + fire +
                 '}';
+    }
+
+    public static Drone createDrone(){
+        Drone d = new Drone();
+        Scanner in = new Scanner(System.in);
+
+        System.out.println("Drone Creation:");
+
+        System.out.print("Enter drone id: ");
+        d.setId(in.nextInt());
+
+        in.nextLine();
+        System.out.print("Enter drone name: ");
+        d.setName(in.nextLine());
+
+        d.setXCoordinate(0);
+        d.setYCoordinate(0);
+
+        return d;
     }
 }

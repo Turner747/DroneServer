@@ -35,9 +35,12 @@ public class DroneConnection extends Thread {
             Drone drone = (Drone) in.readObject();
 
             // do stuff todo: process drone state
+            appWindow.addUpdateDroneMarker(drone);
+            appWindow.writeOutput("Drone " + drone.getId() + " connected");
 
             // reply to client todo: make response class
             ServerResponse response = new ServerResponse();
+            response.message = "drone received";
             out.writeObject(response);
 
         } catch(EOFException e){
