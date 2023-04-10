@@ -50,11 +50,12 @@ public class ServerManager extends JFrame implements ActionListener {
         controlPanel.setPreferredSize(new Dimension(200, 250));
         leftPanel.add(controlPanel);
         leftPanel.add(outputLabel);
-        outputTextArea.setPreferredSize(new Dimension(200, 245));
+        //outputTextArea.setPreferredSize(new Dimension(200, 245));
         outputTextArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(outputTextArea);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.setPreferredSize(new Dimension(200, 245));
         leftPanel.add(scrollPane);
         this.add(leftPanel);
 

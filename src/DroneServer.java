@@ -4,6 +4,7 @@ import ServerManager.ServerManager;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("InfiniteLoopStatement")
@@ -35,6 +36,20 @@ public class DroneServer {
 
         app.removeDroneMarker(drone1.getId());
         app.writeOutput("Drone 1 has been removed");
+
+        ArrayList<Drone> drones = new ArrayList<>();
+        drones.add(drone1);
+        drones.add(drone2);
+
+        FireDroneData data = new FireDroneData();
+        data.writeDronesToCSV(drones);
+
+        ArrayList<Drone> drones2 = data.readDronesFromCSV();
+
+        for(Drone drone : drones2){
+            app.writeOutput(drone.toString());
+        }
+
 
         try{
             int serverPort = 8888;
