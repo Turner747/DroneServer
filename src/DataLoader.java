@@ -2,23 +2,19 @@ import Models.Drone;
 import Models.Fire;
 
 import java.io.*;
-import java.nio.Buffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
-public class FireDroneData {
+public class DataLoader {
     private final String DELIMITER = ",";
-    private final String NEW_LINE = "";
     private final String FIRE_FILE_NAME = "fires.csv";
     private final String DRONE_FILE_NAME = "drones.csv";
 
-    public FireDroneData(){
+    public DataLoader(){}
 
-    }
-
-    public ArrayList<Fire> readFiresFromCSV(){
+    public ArrayList<Fire> readFiresFromCSV() throws IOException {
         ArrayList<Fire> fires = new ArrayList<>();
         Path pathToFile = Paths.get(FIRE_FILE_NAME);
 
@@ -31,12 +27,16 @@ public class FireDroneData {
                 line = br.readLine();
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
+            throw new IOException("Error loading data from " + FIRE_FILE_NAME, ex);
+        } catch (NumberFormatException ex) {
+            throw new IOException("Data corrupted. Please check csv format of " + FIRE_FILE_NAME, ex);
+        } catch (Exception ex) {
+            throw new IOException("Unexpected error occurred while loading data from " + FIRE_FILE_NAME, ex);
         }
         return fires;
     }
 
-    public ArrayList<Drone> readDronesFromCSV(){
+    public ArrayList<Drone> readDronesFromCSV() throws IOException{
         ArrayList<Drone> drones = new ArrayList<>();
         Path pathToFile = Paths.get(DRONE_FILE_NAME);
 
@@ -49,12 +49,16 @@ public class FireDroneData {
                 line = br.readLine();
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
+            throw new IOException("Error loading data from " + DRONE_FILE_NAME, ex);
+        } catch (NumberFormatException ex) {
+            throw new IOException("Data corrupted. Please check csv format of " + DRONE_FILE_NAME, ex);
+        } catch (Exception ex) {
+            throw new IOException("Unexpected error occurred while loading data from " + DRONE_FILE_NAME, ex);
         }
         return drones;
     }
 
-    public boolean writeFiresToCSV(ArrayList<Fire> fires){
+    public void writeFiresToCSV(ArrayList<Fire> fires) throws IOException{
         File file = new File(FIRE_FILE_NAME);
 
         try (FileWriter fw = new FileWriter(file)){
@@ -62,14 +66,13 @@ public class FireDroneData {
                 fw.write((f.toCSV()));
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
-            return false;
+            throw new IOException("Error saving data to " + FIRE_FILE_NAME, ex);
+        } catch (Exception ex) {
+            throw new IOException("Unexpected error occurred while saving data to " + FIRE_FILE_NAME, ex);
         }
-
-        return true;
     }
 
-    public boolean writeDronesToCSV(ArrayList<Drone> drones){
+    public void writeDronesToCSV(ArrayList<Drone> drones) throws IOException{
         File file = new File(DRONE_FILE_NAME);
 
         try (FileWriter fw = new FileWriter(file)){
@@ -77,11 +80,10 @@ public class FireDroneData {
                 fw.write((d.toCSV()));
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
-            return false;
+            throw new IOException("Error saving data to " + DRONE_FILE_NAME, ex);
+        } catch (Exception ex) {
+            throw new IOException("Unexpected error occurred while saving data to " + DRONE_FILE_NAME, ex);
         }
-
-        return true;
     }
 
     private Fire createFire(String[] metadata){

@@ -1,6 +1,5 @@
 import Models.Drone;
 import Models.ServerResponse;
-import ServerManager.ServerManager;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -13,15 +12,15 @@ public class DroneConnection extends Thread {
     ObjectOutputStream out;
     private Socket clientSocket;
 
-    ServerManager appWindow;
+    DroneManager app;
 
-    public DroneConnection (Socket aClientSocket, ServerManager window) {
+    public DroneConnection (Socket aClientSocket, DroneManager app) {
 
-        this.appWindow = window;
+        this.app = app;
         try {
             clientSocket = aClientSocket;
             in = new ObjectInputStream( clientSocket.getInputStream());
-            out =new ObjectOutputStream( clientSocket.getOutputStream());
+            out = new ObjectOutputStream( clientSocket.getOutputStream());
             this.start();
         } catch(IOException e) {
             System.out.println("Connection:"+e.getMessage());
@@ -35,8 +34,7 @@ public class DroneConnection extends Thread {
             Drone drone = (Drone) in.readObject();
 
             // do stuff todo: process drone state
-            appWindow.addUpdateDroneMarker(drone);
-            appWindow.writeOutput("Drone " + drone.getId() + " connected");
+
 
             // reply to client todo: make response class
             ServerResponse response = new ServerResponse();

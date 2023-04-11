@@ -1,5 +1,5 @@
 import Models.Drone;
-import ServerManager.ServerManager;
+import Models.Fire;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -9,47 +9,17 @@ import java.util.concurrent.TimeUnit;
 
 @SuppressWarnings("InfiniteLoopStatement")
 public class DroneServer {
+
+    ArrayList<Drone> drones = new ArrayList<>();
+    ArrayList<Fire> fires = new ArrayList<>();
     public static void main (String[] args) {
 
-        ServerManager app = new ServerManager();
+        DroneManager app = new DroneManager();
 
-        Drone drone1 = new Drone(1, "Drone 1", 100, 100, null);
-        app.addUpdateDroneMarker(drone1);
-        Drone drone2 = new Drone(2, "Drone 2", 200, 200, null);
-        app.addUpdateDroneMarker(drone2);
+        // ----- test region -----
 
-        try {
-            TimeUnit.SECONDS.sleep(1);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
-        drone1.setXCoordinate(400);
-        app.addUpdateDroneMarker(drone1);
-        app.writeOutput("Drone 1 has been moved");
-
-        try {
-            TimeUnit.SECONDS.sleep(1);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        app.removeDroneMarker(drone1.getId());
-        app.writeOutput("Drone 1 has been removed");
-
-        ArrayList<Drone> drones = new ArrayList<>();
-        drones.add(drone1);
-        drones.add(drone2);
-
-        FireDroneData data = new FireDroneData();
-        data.writeDronesToCSV(drones);
-
-        ArrayList<Drone> drones2 = data.readDronesFromCSV();
-
-        for(Drone drone : drones2){
-            app.writeOutput(drone.toString());
-        }
-
+        // ----- end test region -----
 
         try{
             int serverPort = 8888;
@@ -63,5 +33,29 @@ public class DroneServer {
         } catch(IOException e) {
             System.out.println("Listen socket:"+e.getMessage());
         }
+    }
+
+    private boolean loadData(){
+        try {
+            DataLoader data = new DataLoader();
+            fires = data.readFiresFromCSV();
+            drones = data.readDronesFromCSV();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    private boolean saveData(){
+        try {
+            DataLoader data = new DataLoader();
+            data.writeFiresToCSV(fires);
+            data.writeDronesToCSV(drones);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 }

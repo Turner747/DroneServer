@@ -9,9 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
 
-public class ServerManager extends JFrame implements ActionListener {
+public class DroneManagementConsole extends JFrame implements ActionListener {
 
     private final String TITLE = "Drone Management Console";
 
@@ -36,7 +35,7 @@ public class ServerManager extends JFrame implements ActionListener {
     private JTextArea outputTextArea = new JTextArea();
 
 
-    public ServerManager(){
+    public DroneManagementConsole(){
         this.setLayout(new FlowLayout());
         this.setTitle(TITLE);
 
@@ -50,7 +49,6 @@ public class ServerManager extends JFrame implements ActionListener {
         controlPanel.setPreferredSize(new Dimension(200, 250));
         leftPanel.add(controlPanel);
         leftPanel.add(outputLabel);
-        //outputTextArea.setPreferredSize(new Dimension(200, 245));
         outputTextArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(outputTextArea);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -149,5 +147,12 @@ public class ServerManager extends JFrame implements ActionListener {
         outputTextArea.append(output + "\n");
     }
 
+    public void displayError(String message) {
+        this.displayError(message, "Error");
+    }
+
+    public void displayError(String message, String title) {
+        JOptionPane.showMessageDialog(this, message, title, JOptionPane.ERROR_MESSAGE);
+    }
 
 }
