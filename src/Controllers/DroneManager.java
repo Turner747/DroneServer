@@ -8,13 +8,22 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class DroneManager {
-    private DroneManagementConsole window;
+
+    private static DroneManager instance;
+    public static DroneManager getInstance(){
+        if (instance == null){
+            instance = new DroneManager();
+        }
+        return instance;
+    };
+
+    private final DroneManagementConsole window;
     private ArrayList<Drone> drones;
     private ArrayList<Fire> fires;
-    private DataLoader dl;
+    private final DataLoader dl;
 
-    public DroneManager(){
-        this.window = new DroneManagementConsole(this);
+    private DroneManager(){
+        this.window = DroneManagementConsole.getInstance();
         this.dl = new DataLoader();
 
         try{

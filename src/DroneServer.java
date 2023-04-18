@@ -16,7 +16,7 @@ public class DroneServer {
     ArrayList<Fire> fires = new ArrayList<>();
     public static void main (String[] args) {
 
-        DroneManager app = new DroneManager();
+        DroneManager app = DroneManager.getInstance();
 
         // ----- test region -----
 
@@ -29,7 +29,7 @@ public class DroneServer {
 
             while(true) {
                 Socket clientSocket = listenSocket.accept();
-                DroneConnection c = new DroneConnection(clientSocket, app);
+                DroneConnection c = new DroneConnection(clientSocket);
             }
 
         } catch(IOException e) {

@@ -16,9 +16,9 @@ public class DroneConnection extends Thread {
     private Socket clientSocket;
     DroneManager app;
 
-    public DroneConnection (Socket aClientSocket, DroneManager app) {
+    public DroneConnection (Socket aClientSocket) {
 
-        this.app = app;
+        this.app = DroneManager.getInstance();
         try {
             clientSocket = aClientSocket;
             in = new ObjectInputStream( clientSocket.getInputStream());

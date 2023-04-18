@@ -12,15 +12,21 @@ import java.io.PrintStream;
 
 public class DroneManagementConsole extends JFrame implements ActionListener {
 
-    private final DroneManager manager;
+    private static DroneManagementConsole instance;
+    public static DroneManagementConsole getInstance(){
+        if (instance == null){
+            instance = new DroneManagementConsole();
+        }
+        return instance;
+    };
+
     private final JTextArea outputTextArea = new JTextArea();
     private final JPanel mapPanel = new JPanel();
 
     private final int MAP_WIDTH = 800;
     private final int MAP_HEIGHT = 500;
 
-    public DroneManagementConsole(DroneManager manager){
-        this.manager = manager;
+    private DroneManagementConsole(){
 
         this.setLayout(new FlowLayout());
         String TITLE = "Drone Management Console";
