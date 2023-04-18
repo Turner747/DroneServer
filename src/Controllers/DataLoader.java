@@ -9,7 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
-public class DataLoader {
+public class DataLoader { // todo: consider making this a static class, no need to instantiate it
     private final String DELIMITER = ",";
     private final String FIRE_FILE_NAME = "fires.csv";
     private final String DRONE_FILE_NAME = "drones.csv";

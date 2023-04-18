@@ -2,6 +2,7 @@ package Controllers;
 
 import Models.ConnectionStatus;
 import Models.Drone;
+import Models.DroneMessage;
 import Models.ServerResponse;
 
 import java.io.EOFException;
@@ -35,9 +36,9 @@ public class DroneConnection extends Thread {
 
         ServerResponse response = new ServerResponse();
         try {
-            Drone drone = (Drone) in.readObject();
+            DroneMessage inMessage = (DroneMessage) in.readObject();
 
-            if(app.addDrone(drone)) {
+            if(app.addDrone(inMessage.getDrone())) {
                 response.setStatus(ConnectionStatus.SUCCESS);
                 response.setMessage("Drone added successfully");
             } else {
