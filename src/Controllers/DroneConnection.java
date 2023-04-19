@@ -1,7 +1,6 @@
 package Controllers;
 
-import Models.ConnectionStatus;
-import Models.Drone;
+import Models.DroneStatus;
 import Models.DroneMessage;
 import Models.ServerResponse;
 
@@ -38,28 +37,39 @@ public class DroneConnection extends Thread {
         try {
             DroneMessage inMessage = (DroneMessage) in.readObject();
 
-            if(app.addDrone(inMessage.getDrone())) {
-                response.setStatus(ConnectionStatus.SUCCESS);
-                response.setMessage("Drone added successfully");
-            } else {
-                response.setStatus(ConnectionStatus.FAILURE);
-                response.setMessage("Drone could not be added");
+            if (inMessage.getStatus() == DroneStatus.DELETE) {
+                response.setStatus(app.removeDrone(inMessage.getDrone()));
+            }else if (inMessage.getStatus() == DroneStatus.UPDATE ||
+                    inMessage.getStatus() == DroneStatus.NEW) {
+                response.setStatus(app.addDrone(inMessage.getDrone(), inMessage.getStatus()));
+            }
+
+            if (inMessage.getFire() != null) {
+                app.addFire(inMessage.getFire());
+            }
+
+            switch (response.getStatus()) {
+                case SUCCESS -> response.setMessage("Drone update successful");
+                case OUT_OF_BOUNDS_X -> response.setMessage("Drone could not be added: X coordinate out of bounds");
+                case OUT_OF_BOUNDS_Y -> response.setMessage("Drone could not be added: Y coordinate out of bounds");
+                case ERROR -> response.setMessage("Drone could not be added");
+                default -> response.setMessage("Something went wrong");
             }
 
         } catch(EOFException ex){
-            response.setStatus(ConnectionStatus.ERROR);
+            response.setStatus(DroneStatus.ERROR);
             response.setMessage(ex.getMessage());
             app.showError(ex.getMessage(), "EOF Error");
         } catch(IOException ex) {
-            response.setStatus(ConnectionStatus.ERROR);
+            response.setStatus(DroneStatus.ERROR);
             response.setMessage(ex.getMessage());
             app.showError(ex.getMessage(), "IO Error");
         } catch(ClassNotFoundException ex){
-            response.setStatus(ConnectionStatus.ERROR);
+            response.setStatus(DroneStatus.ERROR);
             response.setMessage(ex.getMessage());
             app.showError(ex.getMessage(), "Class Not Found Error");
         } catch (Exception ex) {
-            response.setStatus(ConnectionStatus.ERROR);
+            response.setStatus(DroneStatus.ERROR);
             response.setMessage(ex.getMessage());
             app.showUnexpectedError(ex);
         } finally {

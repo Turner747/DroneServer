@@ -23,8 +23,8 @@ public class DroneManagementConsole extends JFrame implements ActionListener {
     private final JTextArea outputTextArea = new JTextArea();
     private final JPanel mapPanel = new JPanel();
 
-    private final int MAP_WIDTH = 800;
-    private final int MAP_HEIGHT = 500;
+    public static final int MAP_WIDTH = 800;
+    public static final int MAP_HEIGHT = 500;
 
     private DroneManagementConsole(){
 
