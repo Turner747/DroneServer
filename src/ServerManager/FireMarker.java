@@ -8,8 +8,6 @@ import java.awt.*;
 public class FireMarker extends JPanel{
     private int x;
     private int y;
-    private final int WIDTH = 30;
-    private final int HEIGHT = 30;
     private int severity;
 
     private int id;
@@ -20,6 +18,8 @@ public class FireMarker extends JPanel{
         this.severity = fire.getSeverity();
         this.id = fire.getId();
 
+        int WIDTH = 30;
+        int HEIGHT = 30;
         this.setBounds(x, y, WIDTH, HEIGHT);
         this.setBackground(Color.red);
 

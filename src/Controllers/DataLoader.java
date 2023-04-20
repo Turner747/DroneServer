@@ -10,13 +10,11 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 
 public class DataLoader { // todo: consider making this a static class, no need to instantiate it
-    private final String DELIMITER = ",";
-    private final String FIRE_FILE_NAME = "fires.csv";
-    private final String DRONE_FILE_NAME = "drones.csv";
+    private static final String DELIMITER = ",";
+    private static final String FIRE_FILE_NAME = "fires.csv";
+    private static final String DRONE_FILE_NAME = "drones.csv";
 
-    public DataLoader(){}
-
-    public ArrayList<Fire> readFiresFromCSV() throws IOException {
+    public static ArrayList<Fire> readFiresFromCSV() throws IOException {
         ArrayList<Fire> fires = new ArrayList<>();
         Path pathToFile = Paths.get(FIRE_FILE_NAME);
 
@@ -38,7 +36,7 @@ public class DataLoader { // todo: consider making this a static class, no need 
         return fires;
     }
 
-    public ArrayList<Drone> readDronesFromCSV() throws IOException{
+    public static  ArrayList<Drone> readDronesFromCSV() throws IOException{
         ArrayList<Drone> drones = new ArrayList<>();
         Path pathToFile = Paths.get(DRONE_FILE_NAME);
 
@@ -60,7 +58,7 @@ public class DataLoader { // todo: consider making this a static class, no need 
         return drones;
     }
 
-    public void writeFiresToCSV(ArrayList<Fire> fires) throws IOException{
+    public static void writeFiresToCSV(ArrayList<Fire> fires) throws IOException{
         File file = new File(FIRE_FILE_NAME);
 
         try (FileWriter fw = new FileWriter(file)){
@@ -74,7 +72,7 @@ public class DataLoader { // todo: consider making this a static class, no need 
         }
     }
 
-    public void writeDronesToCSV(ArrayList<Drone> drones) throws IOException{
+    public static void writeDronesToCSV(ArrayList<Drone> drones) throws IOException{
         File file = new File(DRONE_FILE_NAME);
 
         try (FileWriter fw = new FileWriter(file)){
@@ -88,7 +86,7 @@ public class DataLoader { // todo: consider making this a static class, no need 
         }
     }
 
-    private Fire createFire(String[] metadata){
+    private static Fire createFire(String[] metadata){
         int id = Integer.parseInt(metadata[0]);
         int xCoordinate = Integer.parseInt(metadata[1]);
         int yCoordinate = Integer.parseInt(metadata[2]);
@@ -96,7 +94,7 @@ public class DataLoader { // todo: consider making this a static class, no need 
         return new Fire(id, xCoordinate, yCoordinate, severity);
     }
 
-    private Drone createDrone(String[] metadata){
+    private static Drone createDrone(String[] metadata){
         int id = Integer.parseInt(metadata[0]);
         String name = metadata[1];
         int xCoordinate = Integer.parseInt(metadata[2]);

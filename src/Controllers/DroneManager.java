@@ -1,35 +1,35 @@
 package Controllers;
 
 import Models.Drone;
+import Models.DroneMessage;
 import Models.DroneStatus;
 import Models.Fire;
 import ServerManager.DroneManagementConsole;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 import java.util.ArrayList;
 
 public class DroneManager {
 
-    private static DroneManager instance;
+    private static final DroneManager instance = new DroneManager();
     public static DroneManager getInstance(){
-        if (instance == null){
-            instance = new DroneManager();
-        }
         return instance;
     };
 
     private final DroneManagementConsole window;
     private ArrayList<Drone> drones;
     private ArrayList<Fire> fires;
-    private final DataLoader dl;
+    private final ArrayList<Socket> droneSockets;
 
     private DroneManager(){
         this.window = DroneManagementConsole.getInstance();
-        this.dl = new DataLoader();
 
         try{
-            this.drones = dl.readDronesFromCSV();
-            this.fires = dl.readFiresFromCSV();
+            this.drones = DataLoader.readDronesFromCSV();
+            this.fires = DataLoader.readFiresFromCSV();
         } catch(IOException ex) {
             window.showError(ex.getMessage(),"Load Error");
         } catch (Exception ex){
@@ -43,9 +43,10 @@ public class DroneManager {
                 fires = new ArrayList<>();
             }
         }
+        droneSockets = new ArrayList<>();
 
         for(Drone drone : drones) {
-            this.addDrone(drone, DroneStatus.NEW);
+            this.addDrone(drone, DroneStatus.NEW, null);
         }
 
         for(Fire fire : fires) {
@@ -53,7 +54,90 @@ public class DroneManager {
         }
     }
 
-    public DroneStatus addDrone(Drone drone, DroneStatus status) {
+    public void moveDrone(int id, int x, int y){
+        Drone drone = null;
+        for(Drone d : drones){
+            if (d.getId() == id){
+                drone = d;
+                break;
+            }
+        }
+        if (drone == null){
+            window.writeOutput("Drone " + id + " not found");
+            return;
+        }
+        drone.setXCoordinate(x);
+        drone.setYCoordinate(y);
+
+        Socket s = getDroneSocket(id);
+        try {
+            assert s != null;
+            ObjectOutputStream out = new ObjectOutputStream( s.getOutputStream() );
+            ObjectInputStream in = new ObjectInputStream( s.getInputStream() );
+
+            DroneMessage message = new DroneMessage(DroneStatus.UPDATE, drone, null, "Move drone to " + x + ", " + y);
+
+            out.writeObject(message);
+
+            DroneMessage clientResponse = (DroneMessage) in.readObject();
+
+            if (clientResponse.getStatus() == DroneStatus.SUCCESS){
+                window.writeOutput(clientResponse.getMessage());
+            }else if (clientResponse.getStatus() == DroneStatus.ERROR){
+                window.showError(clientResponse.getMessage(), "Drone Error");
+            }
+
+        } catch (IOException e) {
+            window.showError(e.getMessage(), "IO Error");
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Socket getDroneSocket(int id){
+        Drone drone = null;
+        for(Drone d : drones){
+            if (d.getId() == id){
+                drone = d;
+                break;
+            }
+        }
+        if (drone == null){
+            window.writeOutput("Drone " + id + " not found");
+            return null;
+        }
+
+        Socket s = null;
+        for(Socket socket : droneSockets){
+            if (socket.getInetAddress().toString().equals(drone.getSocketId())){
+                s = socket;
+                break;
+            }
+        }
+        return s;
+    }
+
+    public void closeAllDrones(){
+        for(Socket socket : droneSockets){
+            try {
+                ObjectOutputStream out = new ObjectOutputStream( socket.getOutputStream());
+                DroneMessage message = new DroneMessage(DroneStatus.DELETE, null, null, "Close drone");
+                out.writeObject(message);
+                socket.close();
+            } catch (IOException e) {
+                window.showError(e.getMessage(), "IO Error");
+            }
+        }
+    }
+
+    public void returnAllDronesToBase(){
+        for(Drone drone : drones){
+            this.moveDrone(drone.getId(), 0, 0);
+        }
+    }
+
+    public DroneStatus addDrone(Drone drone, DroneStatus status, Socket socket){
+        droneSockets.add(socket);
         drones.add(drone);
         try {
             window.addUpdateDroneMarker(drone);
@@ -93,14 +177,25 @@ public class DroneManager {
         window.writeOutput("Fire " + fire.getId() + " with severity " + fire.getSeverity() + " spotted");
     }
 
-    public void removeFire(Fire fire){
-        fires.remove(fire);
+    public void removeFire(int id){
+        boolean fireFound = false;
+        for(Fire fire : fires){
+            if (fire.getId() == id){
+                fires.remove(fire);
+                fireFound = true;
+                break;
+            }
+        }
+        if (!fireFound){
+            window.writeOutput("Fire " + id + " not found");
+            return;
+        }
         try {
-            window.removeFireMarker(fire.getId());
+            window.removeFireMarker(id);
         }catch(Exception ex){
             this.showUnexpectedError(ex);
         }
-        window.writeOutput("Fire " + fire.getId() + " extinguished");
+        window.writeOutput("Fire " + id + " extinguished");
     }
 
     public void showError(String message, String title){
@@ -118,10 +213,10 @@ public class DroneManager {
     }
 
 
-    private void SaveData(){
+    private void saveData(){
         try{
-            dl.writeDronesToCSV(drones);
-            dl.writeFiresToCSV(fires);
+            DataLoader.writeDronesToCSV(drones);
+            DataLoader.writeFiresToCSV(fires);
         } catch (IOException ex) {
             window.showError(ex.getMessage(),"Save Error");
         } catch (Exception ex){
@@ -130,7 +225,7 @@ public class DroneManager {
     }
 
     public void close(){
-        this.SaveData();
+        this.saveData();
         System.exit(0);
     }
 }

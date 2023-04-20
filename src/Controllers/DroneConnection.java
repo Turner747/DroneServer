@@ -11,10 +11,10 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public class DroneConnection extends Thread {
-    ObjectInputStream in;
-    ObjectOutputStream out;
+    private ObjectInputStream in;
+    private ObjectOutputStream out;
     private Socket clientSocket;
-    DroneManager app;
+    private final DroneManager app;
 
     public DroneConnection (Socket aClientSocket) {
 
@@ -36,12 +36,12 @@ public class DroneConnection extends Thread {
         ServerResponse response = new ServerResponse();
         try {
             DroneMessage inMessage = (DroneMessage) in.readObject();
-
+            inMessage.getDrone().setSocketId(clientSocket.getInetAddress().toString());
             if (inMessage.getStatus() == DroneStatus.DELETE) {
                 response.setStatus(app.removeDrone(inMessage.getDrone()));
             }else if (inMessage.getStatus() == DroneStatus.UPDATE ||
                     inMessage.getStatus() == DroneStatus.NEW) {
-                response.setStatus(app.addDrone(inMessage.getDrone(), inMessage.getStatus()));
+                response.setStatus(app.addDrone(inMessage.getDrone(), inMessage.getStatus(), clientSocket));
             }
 
             if (inMessage.getFire() != null) {
@@ -75,7 +75,6 @@ public class DroneConnection extends Thread {
         } finally {
             try {
                 out.writeObject(response);
-                clientSocket.close();
             } catch(IOException ex) {
                 app.showError(ex.getMessage(), "IO Error");
             } catch (Exception ex) {

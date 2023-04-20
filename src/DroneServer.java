@@ -12,8 +12,6 @@ import java.util.ArrayList;
 @SuppressWarnings("InfiniteLoopStatement")
 public class DroneServer {
 
-    ArrayList<Drone> drones = new ArrayList<>();
-    ArrayList<Fire> fires = new ArrayList<>();
     public static void main (String[] args) {
 
         DroneManager app = DroneManager.getInstance();
@@ -35,29 +33,5 @@ public class DroneServer {
         } catch(IOException e) {
             System.out.println("Listen socket:"+e.getMessage());
         }
-    }
-
-    private boolean loadData(){
-        try {
-            DataLoader data = new DataLoader();
-            fires = data.readFiresFromCSV();
-            drones = data.readDronesFromCSV();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-        return true;
-    }
-
-    private boolean saveData(){
-        try {
-            DataLoader data = new DataLoader();
-            data.writeFiresToCSV(fires);
-            data.writeDronesToCSV(drones);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-        return true;
     }
 }

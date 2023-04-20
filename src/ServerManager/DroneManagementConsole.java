@@ -19,10 +19,14 @@ public class DroneManagementConsole extends JFrame implements ActionListener {
         }
         return instance;
     };
-
+    private DroneManager dm;
     private final JTextArea outputTextArea = new JTextArea();
     private final JPanel mapPanel = new JPanel();
 
+    private final JTextField droneIdField = new JTextField();
+    private final JTextField xField = new JTextField();
+    private final JTextField yField = new JTextField();
+    private final JTextField fireIdField = new JTextField();
     public static final int MAP_WIDTH = 800;
     public static final int MAP_HEIGHT = 500;
 
@@ -44,6 +48,38 @@ public class DroneManagementConsole extends JFrame implements ActionListener {
         leftPanel.setPreferredSize(new Dimension(225, 600));
         JPanel controlPanel = new JPanel();
         controlPanel.setPreferredSize(new Dimension(200, 250));
+        JButton moveButton = new JButton("Move");
+        moveButton.addActionListener(this);
+        //moveButton.setPreferredSize(new Dimension(30, 20));
+        JLabel droneLabel = new JLabel("Drone:");
+        droneLabel.setPreferredSize(new Dimension(200, 20));
+        droneIdField.setPreferredSize(new Dimension(40, 20));
+        droneIdField.setToolTipText("id");
+        JLabel xLabel = new JLabel("x:");
+        JLabel yLabel = new JLabel("y:");
+        JLabel idLabel = new JLabel("id:");
+        JLabel idLabel2 = new JLabel("id:");
+        xField.setPreferredSize(new Dimension(40, 20));
+        xField.setToolTipText("x");
+        yField.setPreferredSize(new Dimension(40, 20));
+        yField.setToolTipText("y");
+        controlPanel.add(droneLabel);
+        controlPanel.add(idLabel);
+        controlPanel.add(droneIdField);
+        controlPanel.add(xLabel);
+        controlPanel.add(xField);
+        controlPanel.add(yLabel);
+        controlPanel.add(yField);
+        controlPanel.add(moveButton);
+        JLabel fireLabel = new JLabel("Fire:");
+        fireLabel.setPreferredSize(new Dimension(200, 20));
+        fireIdField.setPreferredSize(new Dimension(40, 20));
+        fireIdField.setToolTipText("id");
+        JButton deleteFireButton = new JButton("Delete");
+        controlPanel.add(fireLabel);
+        controlPanel.add(idLabel2);
+        controlPanel.add(fireIdField);
+        controlPanel.add(deleteFireButton);
         leftPanel.add(controlPanel);
         JLabel outputLabel = new JLabel("Output");
         leftPanel.add(outputLabel);
@@ -69,11 +105,14 @@ public class DroneManagementConsole extends JFrame implements ActionListener {
         this.add(rightPanel);
 
         addWindowListener(
-                new WindowAdapter() {
-                    public void windowClosing(WindowEvent e) {
-                        System.exit(0); // todo: consider sending stop message to drones
-                    }
+            new WindowAdapter() {
+                public void windowClosing(WindowEvent e) {
+                    if(dm == null)
+                        dm = DroneManager.getInstance();
+
+                    dm.close();
                 }
+            }
         );
 
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -88,6 +127,17 @@ public class DroneManagementConsole extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        String command = e.getActionCommand();
+        if(dm == null)
+            dm = DroneManager.getInstance();
+
+        if (command.compareTo("Move") == 0){
+            dm.moveDrone(Integer.parseInt(droneIdField.getText()),
+                    Integer.parseInt(xField.getText()), Integer.parseInt(yField.getText()));
+
+        } else if (command.compareTo("Delete") == 0){
+            dm.removeFire(Integer.parseInt(fireIdField.getText()));
+        }
 
     }
 
