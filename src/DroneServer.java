@@ -16,14 +16,9 @@ public class DroneServer {
 
         DroneManager app = DroneManager.getInstance();
 
-        // ----- test region -----
-
-
-        // ----- end test region -----
-
         try{
-            int serverPort = 8888;
-            ServerSocket listenSocket = new ServerSocket(serverPort);
+            final int SERVER_PORT = 8888;
+            ServerSocket listenSocket = new ServerSocket(SERVER_PORT);
 
             while(true) {
                 Socket clientSocket = listenSocket.accept();

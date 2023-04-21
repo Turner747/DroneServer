@@ -12,13 +12,6 @@ import java.io.PrintStream;
 
 public class DroneManagementConsole extends JFrame implements ActionListener {
 
-    private static DroneManagementConsole instance;
-    public static DroneManagementConsole getInstance(){
-        if (instance == null){
-            instance = new DroneManagementConsole();
-        }
-        return instance;
-    };
     private DroneManager dm;
     private final JTextArea outputTextArea = new JTextArea();
     private final JPanel mapPanel = new JPanel();
@@ -30,7 +23,9 @@ public class DroneManagementConsole extends JFrame implements ActionListener {
     public static final int MAP_WIDTH = 800;
     public static final int MAP_HEIGHT = 500;
 
-    private DroneManagementConsole(){
+    public DroneManagementConsole(DroneManager dm){
+
+        this.dm = dm;
 
         this.setLayout(new FlowLayout());
         String TITLE = "Drone Management Console";
@@ -71,6 +66,8 @@ public class DroneManagementConsole extends JFrame implements ActionListener {
         controlPanel.add(yLabel);
         controlPanel.add(yField);
         controlPanel.add(moveButton);
+        JButton recallButton = new JButton("Recall Drones to Base");
+        controlPanel.add(recallButton);
         JLabel fireLabel = new JLabel("Fire:");
         fireLabel.setPreferredSize(new Dimension(200, 20));
         fireIdField.setPreferredSize(new Dimension(40, 20));
@@ -107,13 +104,9 @@ public class DroneManagementConsole extends JFrame implements ActionListener {
         addWindowListener(
             new WindowAdapter() {
                 public void windowClosing(WindowEvent e) {
-                    if(dm == null)
-                        dm = DroneManager.getInstance();
-
-                    dm.close();
-                }
+                dm.close();
             }
-        );
+        });
 
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         int WIDTH = 1100;
@@ -128,8 +121,6 @@ public class DroneManagementConsole extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         String command = e.getActionCommand();
-        if(dm == null)
-            dm = DroneManager.getInstance();
 
         if (command.compareTo("Move") == 0){
             dm.moveDrone(Integer.parseInt(droneIdField.getText()),
@@ -138,7 +129,9 @@ public class DroneManagementConsole extends JFrame implements ActionListener {
         } else if (command.compareTo("Delete") == 0){
             dm.removeFire(Integer.parseInt(fireIdField.getText()));
         }
-
+        else if (command.compareTo("Recall Drones to Base") == 0){
+            dm.returnAllDronesToBase();
+        }
     }
 
     public void addUpdateDroneMarker(Drone drone){

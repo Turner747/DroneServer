@@ -25,7 +25,7 @@ public class DroneManager {
     private final ArrayList<Socket> droneSockets;
 
     private DroneManager(){
-        this.window = DroneManagementConsole.getInstance();
+        this.window = new DroneManagementConsole(this);
 
         try{
             this.drones = DataLoader.readDronesFromCSV();
@@ -69,7 +69,14 @@ public class DroneManager {
         drone.setXCoordinate(x);
         drone.setYCoordinate(y);
 
-        Socket s = getDroneSocket(id);
+        Socket s = null;
+        for(Socket socket : droneSockets){
+            if (socket.getInetAddress().toString().equals(drone.getSocketId())){
+                s = socket;
+                break;
+            }
+        }
+
         try {
             assert s != null;
             ObjectOutputStream out = new ObjectOutputStream( s.getOutputStream() );
@@ -83,6 +90,7 @@ public class DroneManager {
 
             if (clientResponse.getStatus() == DroneStatus.SUCCESS){
                 window.writeOutput(clientResponse.getMessage());
+                window.addUpdateDroneMarker(clientResponse.getDrone());
             }else if (clientResponse.getStatus() == DroneStatus.ERROR){
                 window.showError(clientResponse.getMessage(), "Drone Error");
             }
@@ -94,31 +102,10 @@ public class DroneManager {
         }
     }
 
-    private Socket getDroneSocket(int id){
-        Drone drone = null;
-        for(Drone d : drones){
-            if (d.getId() == id){
-                drone = d;
-                break;
-            }
-        }
-        if (drone == null){
-            window.writeOutput("Drone " + id + " not found");
-            return null;
-        }
-
-        Socket s = null;
-        for(Socket socket : droneSockets){
-            if (socket.getInetAddress().toString().equals(drone.getSocketId())){
-                s = socket;
-                break;
-            }
-        }
-        return s;
-    }
-
     public void closeAllDrones(){
         for(Socket socket : droneSockets){
+            if (socket == null)
+                continue;
             try {
                 ObjectOutputStream out = new ObjectOutputStream( socket.getOutputStream());
                 DroneMessage message = new DroneMessage(DroneStatus.DELETE, null, null, "Close drone");
@@ -126,6 +113,13 @@ public class DroneManager {
                 socket.close();
             } catch (IOException e) {
                 window.showError(e.getMessage(), "IO Error");
+            }finally {
+                for(Drone drone : drones){
+                    if ( drone.getSocketId().equals(socket.getInetAddress().toString()) ){
+                        drones.remove(drone);
+                        break;
+                    }
+                }
             }
         }
     }
@@ -225,6 +219,7 @@ public class DroneManager {
     }
 
     public void close(){
+        this.closeAllDrones();
         this.saveData();
         System.exit(0);
     }

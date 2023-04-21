@@ -18,8 +18,8 @@ public class DroneMarker extends JPanel {
         this.setLayout(new FlowLayout());
 
         JLabel nameLabel = new JLabel("Drone " + id);
-        nameLabel.setFont(new Font("Ariel", Font.BOLD, 1));
-
+        nameLabel.setFont(new Font("Ariel", Font.BOLD, 12));
+        nameLabel.setPreferredSize(new Dimension(80, 20));
 
         int WIDTH = 80;
         int HEIGHT = 40;
